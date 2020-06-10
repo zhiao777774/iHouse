@@ -1,0 +1,327 @@
+#bulbs {
+    margin-top: 10px;
+}
+
+.bulb {
+    width: 16%;
+    cursor: pointer;
+    margin-left: 50px;
+}
+
+.bulb:first-child {
+    margin-left: 0px;
+}
+
+.filament {
+    transition: all 0.2s ease;
+}
+
+.filament.light {
+    fill: orange;
+}
+
+.prong {
+    fill: #6d6e71;
+}
+
+.cls-2 {
+    fill: #808285;
+}
+
+.cls-3 {
+    fill: #939598;
+}
+
+.cls-4 {
+    opacity: 0.51;
+}
+
+.cls-5 {
+    transition: all 1s ease;
+    fill: #d1d3d4;
+}
+
+.cls-5.light {
+    fill: rgb(255, 241, 51);
+}
+
+#temp, #humid {
+    font-weight: bold;
+}
+
+#door {
+    display: table;
+    margin: 10px auto 10px auto;
+}
+
+.perspective {
+    width: 147px;
+    height: 265px;
+    background: url("../assets/doorBorder.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 20px;
+    margin-left: 0px;
+    perspective: 450;
+    -webkit-perspective: 450;
+    cursor: pointer;
+}
+
+.thumb {
+    width: 147px;
+    height: 265px;
+    background: url("../assets/classDoor.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+    transition: 1s transform linear;
+    transform-origin: left;
+    cursor: pointer;
+}
+
+.thumbOpened {
+    transform: rotateY(-100deg);
+    transform-origin: 8px;
+    transition: .5s linear;
+}
+
+#rgb-div {
+    margin-top: -20.8%;
+    margin-left: 0px;
+}
+
+#rgb-div div p:first-child {
+    margin-top: 10px;
+}
+
+#rgb-div div p>span {
+    font-weight: bold;
+}
+
+#rgb-color-monitor {
+    width: 100px;
+    height: 30px;
+    background: rgb(128, 128, 128);
+    margin: 0 auto;
+    border: 1px solid;
+}
+
+#rgb-r, #rgb-g, #rgb-b {
+    width: 50px;
+    font-weight: bold;
+    text-align: center;
+    border: 1.2px solid;
+    border-radius: 15px;
+}
+
+#r-control, #g-control, #b-control {
+    margin-left: 10px;
+    margin-right: 20px;
+}
+
+#r-control .slider-selection {
+    background: rgba(255, 0, 0, .6);
+}
+
+#r-control .slider-handle {
+    background: red;
+}
+
+#g-control .slider-selection {
+    background: rgba(0, 255, 0, .6);
+}
+
+#g-control .slider-handle {
+    background: green;
+}
+
+#b-control .slider-selection {
+    background: rgba(0, 0, 255, .6);
+}
+
+#b-control .slider-handle {
+    background: blue;
+}
+
+#fan-div {
+    height: 500px;
+}
+
+#fan {
+    width: 350px;
+    height: 350px;
+    margin: 8% auto 10px auto;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+
+#fan.active {
+    animation: fan-spin 6ms linear infinite;
+}
+
+#fan:after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    margin-left: -35px;
+    margin-top: -35px;
+    background: #444;
+    box-shadow: inset 0 0px 0px 8px #444444, inset 0 1px 5px 22px #383838;
+}
+
+.ceiling-fan {
+    display: block;
+    background: #ccc;
+    border-radius: 5px;
+    position: absolute;
+    box-shadow: inset 1px 1px 40px #555;
+}
+
+.ceiling-fan:after {
+    content: "";
+    position: absolute;
+    background: #666;
+    display: block;
+}
+
+.ceiling-fan.horizontal {
+    width: auto;
+    height: 50px;
+    top: 50%;
+    margin-top: -25px;
+    transform: skewX(20deg);
+}
+
+.ceiling-fan.horizontal:after {
+    top: 25%;
+    width: 15px;
+    height: 50%;
+}
+
+.ceiling-fan.vertical {
+    width: 50px;
+    height: auto;
+    left: 50%;
+    margin-left: -25px;
+    transform: skewY(20deg);
+}
+
+.ceiling-fan.vertical:after {
+    height: 15px;
+    width: 50%;
+    margin-left: 25%;
+}
+
+.ceiling-fan.left {
+    left: 0;
+    right: 50%;
+    margin-right: 45px;
+    border-radius: 50% 15px 15px 50%;
+}
+
+.ceiling-fan.left:after {
+    left: 100%;
+}
+
+.ceiling-fan.right {
+    right: 0;
+    left: 50%;
+    margin-left: 45px;
+    border-radius: 15px 50% 50% 15px;
+}
+
+.ceiling-fan.right:after {
+    right: 100%;
+}
+
+.ceiling-fan.top {
+    top: 0;
+    bottom: 50%;
+    margin-bottom: 45px;
+    border-radius: 50% 50% 15px 15px;
+}
+
+.ceiling-fan.top:after {
+    top: 100%;
+}
+
+.ceiling-fan.bottom {
+    top: 50%;
+    bottom: 0;
+    margin-top: 45px;
+    border-radius: 15px 15px 50% 50%;
+}
+
+.ceiling-fan.bottom:after {
+    bottom: 100%;
+}
+
+@keyframes fan-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#airCon {
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+#airCon > svg path.airflow {
+    stroke-dasharray: 320;
+    stroke-dashoffset: 0;
+    animation: airflow 2s linear infinite;
+}
+
+@keyframes airflow {
+    from {
+        stroke-dashoffset: 320;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+#lightRing-div > div {
+    font-weight: bold;
+}
+
+#lightRing-div > div > div {
+    width: 100%;
+}
+
+#lightRing-div > div > div > label {
+    display: inline;
+}
+
+#tv-div > div > h4, #audio-div > div > h4 {
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: -8px;
+}
+
+#tv {
+    width: 50%;
+    height: 50%;
+    cursor: pointer;
+}
+
+#audio {
+    width: 196.5px;
+    margin-top: 20px;
+    margin-bottom: 28px;
+    cursor: pointer;
+}
+
+#audio.open {
+    width: 42.5%;
+    height: 42.5%;
+}

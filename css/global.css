@@ -1,0 +1,379 @@
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Noto+Serif+TC&display=swap");
+
+main {
+    display: fixed;
+}
+
+.banner {
+    width: inherit;
+    height: inherit;
+    border: 5px solid;
+}
+
+.blocker {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, .75);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.blocker:before {
+    content: '';
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: -0.05em;
+}
+
+.blocker div.group-modal {
+    width: 70%;
+    max-width: 350px;
+    max-height: 450px;
+    font-family: 'Noto Sans TC', '微軟正黑體', sans-serif;
+    font-style: normal;
+    display: none;
+    vertical-align: middle;
+    position: relative;
+    z-index: 10;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #000;
+    text-align: left;
+}
+
+.blocker div.group-modal .header {
+    height: 45px;
+    text-align: center;
+    background-color: #F25F5C;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.blocker div.group-modal .header .title {
+    padding-top: 10px;
+    font-size: 18px;
+}
+
+.blocker div.group-modal .header .closer {
+    width: 40px;
+    height: 40px;
+    line-height: 1.5em;
+    position: absolute;
+    top: -20px;
+    right: -17px;
+    font-size: 24px;
+    background-color: #3C3C3C;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.blocker div.group-modal .body {
+    padding: 20px;
+}
+
+.blocker div.group-modal .body .form-check {
+    margin-left: 3px;
+}
+
+#alert-container {
+    display: none;
+    position: absolute;
+    top: 0;
+    transition: 0.5s;
+}
+
+#monitor-container {
+    width: 15vw;
+    font-weight: bold;
+    background-color: #FFF1AA;
+    opacity: .8;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 3;
+    transition: 0.5s;
+    cursor: pointer;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#monitor-container h6 {
+    color: rgb(92, 12, 12);
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#sensor-data-list {
+    margin-top: -6px;
+}
+
+#sensor-data-list li {
+    font-family: '微軟正黑體', serif;
+    margin-bottom: 3px;
+}
+
+#sensor-data-list li.float-left {
+    float: left;
+    margin-right: 12px;
+}
+
+#sensor-data-list li.float-left + li {
+   list-style-type: none;
+}
+
+#main-div, main {
+    background-color: white;
+}
+
+#main-div {
+    width: 85vw;
+    padding: 10px 20px;
+    right: 0;
+}
+
+#main-div, nav {
+    height: inherit;
+    position: fixed;
+    z-index: 1;
+    overflow: hidden;
+}
+
+nav {
+    width: 15vw;
+    z-index: 2;
+    background-color: #FFFFF2!important;
+    box-shadow: 0px 15px 10px 0px rgba(0, 0, 0, 1);
+    border-top-right-radius: 15px;
+}
+
+nav div.card-header {
+    text-align: center;
+    padding-left: 2.5px;
+    padding-right: 2.5px;
+}
+
+nav div.card-header h4 {
+    width: fit-content;
+    font-weight: bold;
+    font-family: '微軟正黑體', serif;
+    color: brown;
+    background-color: white;
+    margin: 0 auto;
+    padding: 6px;
+    border-radius: 10px;
+}
+
+nav div.card-body {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+nav ul li {
+    font-size: 17px;
+    border-bottom: 1.2px solid black;
+    cursor: pointer;
+}
+
+nav ul li:not(:first-child) {
+    margin-top: 10px;
+}
+
+nav ul li > span:hover {
+    color: rgb(160, 59, 12);
+}
+
+#float-menu {
+    float: right;
+}
+
+#float-menu h6 {
+    font-weight: bold;
+    display: inline;
+}
+
+#float-menu button {
+    margin-right: 5px;
+    display: none;
+}
+
+.font-msjh {
+    font-family: 微軟正黑體, serif;
+}
+
+.warning {
+    font-weight: bold;
+    margin-left: 5px;
+    color: red;
+}
+
+div.box {
+    width: 49%;
+    float: left;
+    text-align: center;
+    background-color: #FEFEDB;
+    padding: 10px 0px 10px 0px;
+    margin: 10px 0px 20px 0px;
+    margin-left: 2%; 
+    border-radius: 20px;
+    box-shadow: 10px 15px 10px 0px rgba(0, 0, 0, .3);
+}
+
+div.box:first-child {
+    margin-top: 0px;
+    margin-left: 0;
+}
+
+div.box:nth-child(2) {
+    margin-top: 0px;
+}
+
+div.box h3 {
+    font-weight: bold;
+    font-family: '微軟正黑體', serif;
+    background-color: burlywood;
+    display: inline-block;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+#btnDisplayMonitor, #btnTurnOffAll {
+    margin-top: 12px;
+}
+
+#main-div-body-Dashboard {
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#main-div-body-Controlboard > div {
+    margin: 20px 0px 15px 0px;
+}
+
+#main-div-body-AccessManagement {
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#main-div-body-UsageRecord {
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#controlboard-tab-container a {
+    font-weight: bold;
+    color: black;
+}
+
+#controlboard-tab-container a.active {
+    color: rgb(233, 83, 37);
+}
+
+#card-management-div {
+    width: 40%;
+    margin-top: 20px;
+}
+
+#card-management-div + hr + div {
+    margin-top: 30px;
+    display: flex;
+}
+
+#card-management-div + hr + div > div {
+    width: 40%;
+    text-align: center;
+}
+
+#card-management-div + hr + div > div:nth-of-type(2) {
+    width: 50%;
+    margin-left: 50px;
+}
+
+#card-table thead {
+    background-color: aliceblue;
+} 
+
+#add-table thead {
+    background-color: lemonchiffon;
+}
+
+#card-table, #add-table {
+    border: 2px solid #dee2e6;
+}
+
+#card-table tbody, #add-table tbody {
+    height: auto;
+    max-height: 320px;
+}
+
+#main-div-body-UsageRecord > div {
+    margin-top: 30px;
+    display: flex;
+}
+
+#main-div-body-UsageRecord > div > div {
+    width: 45%;
+    text-align: center;
+}
+
+#main-div-body-UsageRecord > div > div:nth-of-type(2) {
+    width: 60%;
+    margin-left: 50px;
+}
+
+#logIn-records-table thead {
+    background-color: aliceblue;
+} 
+
+#sensor-records-table thead {
+    background-color: lemonchiffon;
+}
+
+#logIn-records-table, #sensor-records-table {
+    border: 2px solid #dee2e6;
+}
+
+#logIn-records-table tbody, #sensor-records-table tbody {
+    height: auto;
+    max-height: 400px;
+    font-family: 'Noto Sans TC', '微軟正黑體', sans-serif;
+}
+
+table.scrollable thead, table.scrollable tbody tr {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+
+table.scrollable tbody {
+    display: block;
+    height: 400px;
+}
+
+.scrollbar {
+    height: 500px;
+    overflow-y: scroll;
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 6px;
+    background-color: #F5F5F5;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #F5F5F5;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .1);
+}

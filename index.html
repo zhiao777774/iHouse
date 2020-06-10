@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="assets/website-logo.ico" type="image/x-icon">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-firestore.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://seiyria.com/bootstrap-slider/js/bootstrap-slider.js"></script>
+    <script src="https://www.w3schools.com/lib/w3color.js"></script>
+    <script src="js/global.init.js"></script>
+    <script src="js/iot.module.hadler.js"></script>
+    <script src="js/firebase.config.js"></script>
+    <script src="js/page.renderer.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+        integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://seiyria.com/bootstrap-slider/css/bootstrap-slider.css">
+    <link rel="stylesheet" href="css/global.css" type="text/css">
+    <link rel="stylesheet" href="css/iot.module.css" type="text/css">
+    <link rel="stylesheet" href="css/glyphicon.css" type="text/css">
+    <title>iHouse</title>
+</head>
+
+<body>
+    <header style="width: 100vw; height: 14vh;">
+        <img src="assets/header.png" alt="header image" class="banner">
+    </header>
+    <main style="width: 100vw; height: 86vh;">
+        <div id="alert-container" class="alert alert-danger" role="alert"></div>
+        <div id="monitor-container"></div>
+        <nav class="d-none d-md-block sidebar">
+            <div class="card-header">
+                <h4>智慧居家控制系統</h4>
+                <button id="btnDisplayMonitor" class="btn btn-sm btn-success">顯示監控視窗</button>
+                <button id="btnTurnOffAll" class="btn btn-sm btn-danger">關閉全部設備</button>
+            </div>
+            <div class="sidebar-sticky card-body">
+                <ul class="nav flex-column"></ul>
+            </div>
+        </nav>
+        <div id="main-div">
+            <span id="float-menu">
+                <button id="btnAdditionMember" class="btn btn-sm btn-outline-primary">新增成員</button>
+                <button id="btnRemoveMember" class="btn btn-sm btn-outline-primary">移除成員</button>
+                <h6></h6>
+            </span>
+        </div>
+        <div class="blocker">
+            <div id="logIn-container" class="group-modal"></div>
+        </div>
+    </main>
+</body>
+
+</html>
