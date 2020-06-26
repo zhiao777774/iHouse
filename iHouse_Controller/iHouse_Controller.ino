@@ -6,11 +6,8 @@
 #include <StepperMotor.h>      //步進馬達程式庫
 #include <SoftwareSerial.h>    //藍牙程式庫
 #include <Adafruit_NeoPixel.h> //LED燈環、燈條程式庫
-//DHT程式庫---------------
-#include <DHT.h>
-#include <DHT_U.h>
-//------------------------
-#include <SimpleTimer.h> //計時器程式庫
+#include <DHT.h>               //DHT(溫溼度感測器)程式庫
+#include <SimpleTimer.h>       //計時器程式庫
 
 #define STEPS 4076          //步進馬達步數 = 4076
 #define SPEED 1             //步進馬達轉速，數字愈大則速度愈慢，在5v電力下最快可達15rpm
@@ -24,7 +21,7 @@
 #define TV 13               //電視 pin腳 = 13
 #define Audio 13            //音響 pin腳 = 13
 #define Buzzer 1            //蜂鳴器 pin腳 = 1
-#define BtnStopRing 0       //按鈕 pin腳 = 0
+#define BtnStopRing 13      //按鈕 pin腳 = 13
 #define SSpin A4            //晶片選擇腳位 pin腳 = A4
 #define RSTpin A5           //讀卡機的重置腳位 pin腳 = A5
 #define PIRsensor 12        //人體感測器 pin腳 = 12
@@ -32,12 +29,13 @@
 #define BTtx 7              //藍芽傳送腳(TX) pin腳 = 7
 #define LightRing 10        //燈環 pin腳 = 10
 #define LightBar 9          //燈條 pin腳 = 9
-#define DHTsensor 11        //溫濕度感測器 pin腳 = 11
+#define DHTsensor 13        //溫濕度感測器 pin腳 = 13
 #define DHTsensorType DHT22 //溫濕度感測器型號
+#define DHTinterval 60000L  //自動讀取溫溼度感測器資料的間隔時間(預設1分鐘)
 
-String data = "";      //從伺服器接收到的資料
-String btData = "";    //從藍芽接收到的資料
-int currentCircle = 0; //燈環樣式
+String serverData = ""; //從伺服器接收到的資料
+String btData = "";     //從藍芽接收到的資料
+int currentCircle = 0;  //燈環樣式
 unsigned long previousMillis = 0L;
 
 //建立MFRC522物件 pin腳 = A4, A5
@@ -51,13 +49,14 @@ Adafruit_NeoPixel circleLED = Adafruit_NeoPixel(16, LightRing);
 //建立燈條物件 15顆LED pin腳 = 9
 Adafruit_NeoPixel barLED = Adafruit_NeoPixel(15, LightBar);
 //建立溫溼度感測器物件 型號 = DHT22 pin腳 = 11
-DHT_Unified dht(DHTsensor, DHTsensorType);
+DHT dht(DHTsensor, DHTsensorType);
 //建立timer以傳送溫溼度資料
 SimpleTimer timer;
 
 void setup()
 {
     Serial.begin(9600);
+    Serial.setTimeout(500);
     bluetooth.begin(9600);
 
     pinMode(LED1, OUTPUT);
@@ -70,6 +69,8 @@ void setup()
     pinMode(TV, OUTPUT);
     pinMode(Audio, OUTPUT);
     pinMode(Buzzer, OUTPUT);
+    pinMode(SSpin, OUTPUT);
+    pinMode(RSTpin, OUTPUT);
     pinMode(BtnStopRing, INPUT);
     pinMode(PIRsensor, INPUT);
 
@@ -95,8 +96,8 @@ void setup()
     //初始化DHT
     dht.begin();
 
-    stepper.setStepDuration(SPEED); //設定步進馬達轉速
-                                    //timer.setInterval(5000L, getTempHumid); //設定timer每5秒執行一次getTempHumid函數
+    stepper.setStepDuration(SPEED);               //設定步進馬達轉速
+    timer.setInterval(DHTinterval, getTempHumid); //設定timer每固定時間執行一次getTempHumid函數
 }
 
 void loop()
@@ -104,76 +105,75 @@ void loop()
     //btDataHandler();
     //checkPIRsensor();
     checkRFID();
-    //timer.run();
+    timer.run();
 
     if (Serial.available())
     {
         char received = Serial.read();
-        data.concat(received);
+        serverData.concat(received);
 
         if (received == '\n')
         {
-            data.replace('\n', ' ');
-            data.trim();
-            bluetooth.print(data); //將資料傳送給藍芽模組
+            serverData.replace('\n', ' ');
+            serverData.trim();
+            bluetooth.print(serverData); //將資料傳送給藍芽模組
 
-            if (data.startsWith("ledOne"))
+            if (serverData.startsWith("ledOne"))
             {
-                digitalWrite(LED1, lastChar(data) == '0' ? LOW : HIGH);
+                digitalWrite(LED1, lastChar(serverData) == '0' ? LOW : HIGH);
             }
-            else if (data.startsWith("ledTwo"))
+            else if (serverData.startsWith("ledTwo"))
             {
-                digitalWrite(LED2, lastChar(data) == '0' ? LOW : HIGH);
+                digitalWrite(LED2, lastChar(serverData) == '0' ? LOW : HIGH);
             }
-            else if (data.startsWith("red"))
+            else if (serverData.startsWith("red"))
             {
-                analogWrite(RgbRed, 255 - (data.substring(3).toInt()));
+                analogWrite(RgbRed, 255 - (serverData.substring(3).toInt()));
             }
-            else if (data.startsWith("green"))
+            else if (serverData.startsWith("green"))
             {
-                analogWrite(RgbGreen, 255 - (data.substring(5).toInt()));
+                analogWrite(RgbGreen, 255 - (serverData.substring(5).toInt()));
             }
-            else if (data.startsWith("blue"))
+            else if (serverData.startsWith("blue"))
             {
-                analogWrite(RgbBlue, 255 - (data.substring(4).toInt()));
+                analogWrite(RgbBlue, 255 - (serverData.substring(4).toInt()));
             }
-            else if (data.startsWith("door"))
+            else if (serverData.startsWith("door"))
             {
-                bool isOpen = lastChar(data) == '1';
+                bool isOpen = lastChar(serverData) == '1';
                 stepper.step((isOpen ? STEPS : -STEPS) / 4.5);
             }
-            else if (data.startsWith("fan"))
+            else if (serverData.startsWith("fan"))
             {
-                digitalWrite(Fan, lastChar(data) == '0' ? LOW : HIGH);
+                digitalWrite(Fan, lastChar(serverData) == '0' ? LOW : HIGH);
             }
-            else if (data.startsWith("airCon"))
+            else if (serverData.startsWith("airCon"))
             {
-                digitalWrite(AirCon, lastChar(data) == '0' ? LOW : HIGH);
+                digitalWrite(AirCon, lastChar(serverData) == '0' ? LOW : HIGH);
             }
-            else if (data.startsWith("lightRing"))
+            else if (serverData.startsWith("lightRing"))
             {
-                currentCircle = data.substring(9).toInt();
-                if (currentCircle == 0)
-                    setLightRingStatus();
+                currentCircle = serverData.substring(9).toInt();
+                setLightRingStatus(currentCircle);
             }
-            else if (data.startsWith("lightBar"))
+            else if (serverData.startsWith("lightBar"))
             {
                 enableLightBar();
             }
-            else if (data.startsWith("tv"))
+            else if (serverData.startsWith("tv"))
             {
-                digitalWrite(TV, lastChar(data) == '0' ? LOW : HIGH);
+                digitalWrite(TV, lastChar(serverData) == '0' ? LOW : HIGH);
             }
-            else if (data.startsWith("audio"))
+            else if (serverData.startsWith("audio"))
             {
-                digitalWrite(Audio, lastChar(data) == '0' ? LOW : HIGH);
+                digitalWrite(Audio, lastChar(serverData) == '0' ? LOW : HIGH);
             }
-            else if (data.startsWith("requestTempHumidData"))
+            else if (serverData.startsWith("requestTempHumidData"))
             {
                 respondTempHumidData();
             }
 
-            data = "";
+            serverData = "";
         }
     }
 
@@ -181,7 +181,7 @@ void loop()
     if (currentMillis - previousMillis > 1000)
     {
         previousMillis = currentMillis;
-        setLightRingStatus();
+        setLightRingStatus(currentCircle);
     }
 }
 
@@ -212,6 +212,7 @@ bool checkPIRsensor()
         tone(Buzzer, 1000);
         return true;
     }
+
     Serial.println("Body Disappeared");
     bluetooth.print("0");
     return false;
@@ -257,11 +258,12 @@ bool checkRFID()
 //檢查關閉燈環按鈕是否被按下
 bool isButtonPressed()
 {
-    if (digitalRead(BtnStopRing) == HIGH)
+    /*if (digitalRead(BtnStopRing) == HIGH)
     {
+        Serial.println("lightRing0");
         currentCircle = 0;
         return true;
-    }
+    }*/
     return false;
 }
 
@@ -281,11 +283,11 @@ enum LightRingStatus
 };
 
 //設定燈環模組狀態
-void setLightRingStatus()
+void setLightRingStatus(int status)
 {
     byte r = 255, g = 255, b = 255; //燈環特效使用顏色
 
-    switch (currentCircle)
+    switch (status)
     {
     case CLOSE: //關閉circle LED
         circleLED.clear();
@@ -634,30 +636,36 @@ void meteor(int r, int g, int b, int pos, int len)
 
 void getTempHumid()
 {
-    sensors_event_t event;
-    Serial.print("tempHumid:");
+    float temp = dht.readTemperature(); //獲取溫度
+    float humid = dht.readHumidity();   //獲取濕度
 
-    //獲取溫度
-    dht.temperature().getEvent(&event);
-    Serial.print(event.temperature);
+    if (isnan(temp) || isnan(humid))
+    {
+        Serial.print("getTempHumidError");
+        return;
+    }
+
+    Serial.print("tempHumid:");
+    Serial.print(temp);
     Serial.print(",");
-    //獲取濕度
-    dht.humidity().getEvent(&event);
-    Serial.println(event.relative_humidity);
+    Serial.println(humid);
 }
 
 void respondTempHumidData()
 {
-    sensors_event_t event;
-    Serial.print("respondTempHumidData:");
+    float temp = dht.readTemperature(); //獲取溫度
+    float humid = dht.readHumidity();   //獲取濕度
 
-    //獲取溫度
-    dht.temperature().getEvent(&event);
-    Serial.print(event.temperature);
+    if (isnan(temp) || isnan(humid))
+    {
+        Serial.print("getTempHumidError");
+        return;
+    }
+
+    Serial.print("respondTempHumidData:");
+    Serial.print(temp);
     Serial.print(",");
-    //獲取濕度
-    dht.humidity().getEvent(&event);
-    Serial.println(event.relative_humidity);
+    Serial.println(humid);
 }
 
 char lastChar(String str)

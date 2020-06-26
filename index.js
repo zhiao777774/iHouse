@@ -25,15 +25,16 @@ arduinoSerialParser.on('data', (data) => {
     console.log('Serial Parser receive data: ' + data);
 
     if (data.startsWith('tempHumid:')) {
-        const [temp, humid] = data.substring(data.indexOf('TempHumid:') + 1).split(',');
+        const [temp, humid] = data.substring(data.indexOf(':') + 1).split(',');
 
         firebase.update('house-sensor', 'tempHumid', {
             temp: parseFloat(temp),
             humid: parseFloat(humid)
         });
     } else if (data.startsWith('respondTempHumidData:')) {
-        saveTempHumidData(data.substring(
-            data.indexOf('respondTempHumidData:') + 1));
+        saveTempHumidData(data.substring(data.indexOf(':') + 1));
+    } else if (data.startsWith('getTempHumidError')) {
+        console.error("An error is occurred on getting temperature and humidity.");
     } else if (data.startsWith('Body')) {
         const [, detected] = data.split(' ');
         detected = detected == 'Detected' ? true : false;
@@ -41,34 +42,36 @@ arduinoSerialParser.on('data', (data) => {
     } else if (data.startsWith('RFID Error:')) {
         const [, cardNumber] = data.split(':');
         const date = new Date();
-        
+
         firebase.set('house-accessible-newCard', cardNumber, {
             date: date.getFullDate() + ' ' + date.getFullTime(),
             value: cardNumber
         });
     } else if (data.startsWith('led')) {
         const code = 'led' + (data.substring(3, 6) == 'One' ? 1 : 2);
-        const status  = data.charAt(data.legth() - 1);
-        firebase.update('house-sensor', led, { 
-            [code]: Number(status)    
+        const status = data.charAt(data.length - 1);
+        firebase.update('house-sensor', led, {
+            [code]: Number(status)
         });
     } else if (data.startsWith('red') || data.startsWith('green') || data.startsWith('blue')) {
         const colors = ['red', 'green', 'blue'];
         colors.forEach((color) => {
             if (data.startsWith(color)) {
-                firebase.update('house-sensor', 'rgbLed', { 
-                    [color]: Number(data.substring(color.length()))
+                firebase.update('house-sensor', 'rgbLed', {
+                    [color]: Number(data.substring(color.length))
                 });
             }
         });
     } else if (data.startsWith('lightRing')) {
-        const type = Number(data.charAt(data.legth() - 1));
-        firebase.update('house-sensor', 'lightRing', { type });
+        const type = Number(data.charAt(data.length - 1));
+        firebase.update('house-sensor', 'lightRing', {
+            type
+        });
     } else {
         const sensorOpenable = ['door', 'fan', 'airCon', 'tv', 'audio'];
         sensorOpenable.forEach((sensor) => {
             if (data.startsWith(sensor)) {
-                const status = data.charAt(sensor.length());
+                const status = data.charAt(sensor.length);
                 firebase.update('house-sensor', sensor, {
                     isOpen: status != 0 ? true : false
                 });
@@ -85,11 +88,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on('lightBarFlicker', () => {
-        writeLineToArduino('lightBar');
+        writeToArduino('lightBar');
     });
 });
 
-app.listen(port, () => console.log('http伺服器已在' + port + '埠口啟動'));
+server.listen(port, () => console.log('http伺服器已在' + port + '埠口啟動'));
 
 app.get('/', (req, res) => {
     fs.readFile(__dirname + '/index.html', (err, data) => {
@@ -130,37 +133,38 @@ function initModuleStatus() {
     });
 
     data.rgbLed.then((rgbLed) => {
-        writeLineToArduino(`red${rgbLed.red}`);
-        writeLineToArduino(`green${rgbLed.green}`);
-        writeLineToArduino(`blue${rgbLed.blue}`);
+        writeToArduino(`red${rgbLed.red}`);
+        writeToArduino(`green${rgbLed.green}`);
+        writeToArduino(`blue${rgbLed.blue}`);
     });
 
     data.door.then((door) => {
-        writeLineToArduino('door' + (door.isOpen ? '1' : '0'));
+        writeToArduino('door' + (door.isOpen ? '1' : '0'));
     });
 
     data.fan.then((fan) => {
-        writeLineToArduino('fan' + (fan.isOpen ? '1' : '0'));
+        writeToArduino('fan' + (fan.isOpen ? '1' : '0'));
     });
 
     data.airCon.then((airCon) => {
-        writeLineToArduino('airCon' + (airCon.isOpen ? '1' : '0'));
+        writeToArduino('airCon' + (airCon.isOpen ? '1' : '0'));
     });
 
     data.lightRing.then((lightRing) => {
-        writeLineToArduino('lightRing' + lightRing.type);
+        writeToArduino('lightRing' + lightRing.type);
     });
 
     data.tv.then((tv) => {
-        writeLineToArduino('tv' + (tv.isOpen ? '1' : '0'));
+        writeToArduino('tv' + (tv.isOpen ? '1' : '0'));
     });
 
     data.audio.then((audio) => {
-        writeLineToArduino('audio' + (audio.isOpen ? '1' : '0'));
+        writeToArduino('audio' + (audio.isOpen ? '1' : '0'));
     });
 }
 
 initModuleChangeEvent();
+
 function initModuleChangeEvent() {
     const callbacks = {
         led: function (doc) {
@@ -224,19 +228,26 @@ function writeToArduino(data = '') {
     arduinoSerialPort.write(Buffer.from('\n', 'ascii'));
 }
 
-//writeLineToArduino('requestTempHumidData');
-//setInterval(writeLineToArduino('requestTempHumidData'), 60000);
+writeToArduino('requestTempHumidData');
+setInterval(() => writeToArduino('requestTempHumidData'), 60000);
+
 function saveTempHumidData(data) {
     const [temp, humid] = data.split(','),
         date = new Date();
 
-    data = firebase.get('historical-data', 'tempHumid');
-    if (data.temps.length >= 120 && data.humids.length >= 120) {
-        firebase.update('historical-data', 'tempHumid', {
-            temps: firebase.arrayRemove(data.temps[0]),
-            humids: firebase.arrayRemove(data.humids[0])
-        });
-    }
+    firebase.get('historical-data', 'tempHumid').then((doc) => {
+        const {
+            temps,
+            humids
+        } = doc;
+        if (temps.length >= 120 && humids.length >= 120) {
+            firebase.update('historical-data', 'tempHumid', {
+                temps: firebase.arrayRemove(data.temps[0]),
+                humids: firebase.arrayRemove(data.humids[0])
+            });
+        }
+
+    });
 
     firebase.update('historical-data', 'tempHumid', {
         temps: firebase.arrayUnion({

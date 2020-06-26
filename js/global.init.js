@@ -15,7 +15,7 @@ let userAccount = undefined;
                 $('#alert-container').fadeIn('slow')
                     .text(detected ? '有人靠近!' : '人已消失');
                 setTimeout(() => $('#alert-container').fadeOut('slow'), 3000);
-            })
+            });
         }
     });
 

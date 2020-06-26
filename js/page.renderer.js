@@ -234,7 +234,7 @@ let preRenderer = undefined,
                         </div>
                     </div>
                     <div id="rgb-div" class="box">
-                        <h3>RGB LED</h3>
+                        <h3>RGB燈</h3>
                         <div></div>
                     </div>
                 </div>
